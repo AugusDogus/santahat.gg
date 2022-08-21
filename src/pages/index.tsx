@@ -31,7 +31,7 @@ const Home: NextPage = () => {
 
 const HomeWithPlausible = () => {
   return (
-    <PlausibleProvider domain="santahat.gg" customDomain="plausible.augie.gg" selfHosted>
+    <PlausibleProvider domain="santahat.gg" customDomain="plausible.augie.gg">
       <Home />
     </PlausibleProvider>
   );
