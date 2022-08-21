@@ -13,7 +13,7 @@ function defineNextConfig(config) {
   return config;
 }
 
-export default withPlausibleProxy()(
+export default withPlausibleProxy({ customDomain: 'https://plausible.augie.gg' })(
   defineNextConfig({
     reactStrictMode: true,
     swcMinify: true,
