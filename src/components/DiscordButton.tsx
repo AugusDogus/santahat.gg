@@ -1,12 +1,24 @@
 import { signIn, signOut, useSession } from 'next-auth/react';
+import { usePlausible } from 'next-plausible';
 
 const DiscordButton: React.FC = () => {
   const { data: sessionData } = useSession();
+  const plausible = usePlausible();
 
   return (
     <button
       className="max-h-[40px] text-base flex items-center px-2 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-200 transform rounded-md bg-[#5865f2] hover:bg-[#4752c4] focus:bg-[#3c45a5]"
-      onClick={sessionData ? () => signOut() : () => signIn('discord')}
+      onClick={
+        sessionData
+          ? () => {
+              signOut();
+              plausible('signOut');
+            }
+          : () => {
+              signIn('discord');
+              plausible('signIn');
+            }
+      }
     >
       <svg className="w-5 h-5 mx-1" xmlns="http://www.w3.org/2000/svg" width="71" height="55" viewBox="0 0 71 55" fill="none">
         <g clipPath="url(#clip0)">

@@ -3,6 +3,7 @@ import { useFabricJSEditor, FabricJSCanvas } from 'fabricjs-react';
 import { useSession } from 'next-auth/react';
 import React, { useState, useCallback, useEffect } from 'react';
 import NextImage from 'next/future/image';
+import { usePlausible } from 'next-plausible';
 
 interface PropsType {
   [key: string]: string;
@@ -12,6 +13,7 @@ const DiscordProfile = ({ avatarURL, hatURL }: PropsType) => {
   const { status } = useSession();
   const { editor, onReady: init } = useFabricJSEditor();
   const [avatarImage, setAvatarImage] = useState('');
+  const plausible = usePlausible();
 
   // Canvas dimensions
   const canvasSize = 640 as const;
@@ -112,6 +114,11 @@ const DiscordProfile = ({ avatarURL, hatURL }: PropsType) => {
     init(canvas);
   };
 
+  const onClick = () => {
+    plausible('download');
+    updateAvatar();
+  };
+
   return (
     <>
       <h2 className="text-2xl">Customize Your Hat</h2>
@@ -123,7 +130,7 @@ const DiscordProfile = ({ avatarURL, hatURL }: PropsType) => {
           <NextImage src={avatarImage ? avatarImage : '/default.png'} alt="Preview Round" width={128} height={128} />
         </div>
       </div>
-      <a onClick={updateAvatar} href={avatarImage} download="avatar.png">
+      <a onClick={onClick} href={avatarImage} download="avatar.png">
         <button className="flex items-center px-2 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-200 transform rounded-sm bg-[#5865f2] hover:bg-[#4752c4] focus:bg-[#3c45a5]">
           <span className="mx-1">Download</span>
         </button>

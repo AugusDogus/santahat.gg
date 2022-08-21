@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { useSession } from 'next-auth/react';
 import DiscordCTA from '../components/DiscordCTA';
 import AvatarCanvas from '../components/AvatarCanvas';
+import PlausibleProvider from 'next-plausible';
 
 const Home: NextPage = () => {
   const session = useSession();
@@ -15,6 +16,7 @@ const Home: NextPage = () => {
         <title>Santa Hat Bot</title>
         <meta name="description" content="Slap a Santa hat on your Discord avatar today!" />
         <link rel="icon" href="/logo.png" />
+        {process.env.NODE_ENV === 'production' && <script async defer data-domain="santahat.gg" src="https://plausible.augie.gg/js/plausible.js" />}
       </Head>
       <main className="container flex flex-col items-center justify-center min-h-screen p-4 mx-auto text-slate-200 space-y-4">
         <div className="text-center space-y-2">
@@ -28,4 +30,12 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+const HomeWithPlausible = () => {
+  return (
+    <PlausibleProvider domain="santahat.gg">
+      <Home />
+    </PlausibleProvider>
+  );
+};
+
+export default HomeWithPlausible;
