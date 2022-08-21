@@ -10,7 +10,7 @@ interface PropsType {
 }
 
 const DiscordProfile = ({ avatarURL, hatURL }: PropsType) => {
-  const { status } = useSession();
+  const { data: sessionData, status } = useSession();
   const { editor, onReady: init } = useFabricJSEditor();
   const [avatarImage, setAvatarImage] = useState('');
   const plausible = usePlausible();
@@ -115,7 +115,7 @@ const DiscordProfile = ({ avatarURL, hatURL }: PropsType) => {
   };
 
   const onClick = () => {
-    plausible('download');
+    plausible('download', { props: { avatarImage, sessionData } });
     updateAvatar();
   };
 
