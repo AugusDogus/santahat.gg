@@ -14,7 +14,7 @@ specifiers:
   fabricjs-react: ^1.0.8
   next: 12.2.5
   next-auth: ^4.10.2
-  next-plausible: ^3.2.0
+  next-plausible: ^3.6.4
   postcss: ^8.4.14
   react: 18.2.0
   react-dom: 18.2.0
@@ -27,7 +27,7 @@ dependencies:
   fabricjs-react: 1.0.8_2px66ud5o3oimaa55vb5g3sska
   next: 12.2.5_biqbaboplfbrettd7655fr4n2y
   next-auth: 4.10.3_biqbaboplfbrettd7655fr4n2y
-  next-plausible: 3.2.0_3xcjr4wz26biff45sz3jtokgje
+  next-plausible: 3.6.4_3xcjr4wz26biff45sz3jtokgje
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   zod: 3.18.0
@@ -2061,10 +2061,10 @@ packages:
       uuid: 8.3.2
     dev: false
 
-  /next-plausible/3.2.0_3xcjr4wz26biff45sz3jtokgje:
-    resolution: {integrity: sha512-OlYcLXBG3kKd/fKMpm8SZ5IkUKSFm1/8t7cv6e5bewIqlpdZpdWuSrjbdJpbmutb2KPLXHzilKp09zmDGjy9KQ==}
+  /next-plausible/3.6.4_3xcjr4wz26biff45sz3jtokgje:
+    resolution: {integrity: sha512-aHL4IL+gkkjs5ScB18LZ3LMEWXKR5VTvnMDs/fHNFHadOh23i37fD+VP5oAQLALR8Mde63l9JJljrw9DkvjWjQ==}
     peerDependencies:
-      next: ^11.1.0 || ^12.0.0
+      next: ^11.1.0 || ^12.0.0 || ^13.0.0
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
     dependencies:
