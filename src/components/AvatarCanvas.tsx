@@ -160,8 +160,6 @@ const DiscordProfile = ({ avatarURL, hatURL }: PropsType) => {
       const canvasMarginMultiplier = 0.75;
       const innerCanvasSize = canvasSize * canvasMarginMultiplier
 
-      console.log({ canvasSize, innerCanvasSize, canvas })
-
       canvas.on('object:added', () => {
         updateAvatar(canvasSize, innerCanvasSize, canvas);
         canvas.renderAll();
@@ -169,7 +167,6 @@ const DiscordProfile = ({ avatarURL, hatURL }: PropsType) => {
 
       canvas.on('object:modified', () => {
         canvas.renderAll();
-        console.log({ canvasSize, innerCanvasSize, canvas })
         updateAvatar(canvasSize, innerCanvasSize, canvas);
       });
 
