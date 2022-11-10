@@ -8,7 +8,7 @@ import PlausibleProvider from 'next-plausible';
 const Home: NextPage = () => {
   const session = useSession();
   const { data: sessionData } = session;
-  const avatarURL = sessionData && sessionData.user && sessionData.user.image ? sessionData.user.image : '/default.png';
+  const avatarURL = sessionData?.user?.image || '/default.png';
 
   return (
     <>

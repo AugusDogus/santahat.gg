@@ -1,5 +1,6 @@
 import { fabric } from 'fabric';
-import { useFabricJSEditor, FabricJSCanvas } from 'fabricjs-react';
+import { Canvas } from 'fabric/fabric-impl';
+
 import { useSession } from 'next-auth/react';
 import React, { useState, useCallback, useEffect } from 'react';
 import NextImage from 'next/future/image';
@@ -11,118 +12,36 @@ interface PropsType {
 
 const DiscordProfile = ({ avatarURL, hatURL }: PropsType) => {
   const { data: sessionData, status } = useSession();
-  const { editor, onReady: init } = useFabricJSEditor();
   const [avatarImage, setAvatarImage] = useState('');
   const plausible = usePlausible();
 
-  // Canvas dimensions
-  const canvasSize = 640 as const;
-  const innerCanvasSize = 512 as const;
-
-  // Create a rectangle to display the boundary of the "rendered" canvas
-  const boundaryRect = new fabric.Rect().set({
-    height: innerCanvasSize + 4,
-    width: innerCanvasSize + 4,
-    left: (canvasSize - innerCanvasSize) / 2 - 4,
-    top: (canvasSize - innerCanvasSize) / 2 - 4,
-    selectable: false,
-    evented: false,
-    fill: 'transparent',
-    hoverCursor: 'default',
-    stroke: '#7289da',
-    strokeDashArray: [16, 16],
-    strokeWidth: 4,
-  });
-
-  const addHat = useCallback(() => {
-    const image = new Image();
-    image.src = hatURL ?? '';
-    image.crossOrigin = 'anonymous';
-    image.onload = () => {
-      const hat = new fabric.Image(image, {
-        top: -20,
-        scaleX: 1.2,
-        scaleY: 1.2,
-        left: (canvasSize - innerCanvasSize) / 0.95,
-        borderColor: '#00ee76',
-        borderOpacityWhenMoving: 1,
-        borderScaleFactor: 1.5,
-        cornerColor: '#00ee76',
-        cornerSize: 24,
-        transparentCorners: true,
-      });
-      editor?.canvas.add(hat);
-      updateAvatar();
-      hat.sendBackwards();
-      updateAvatar();
-      boundaryRect.bringForward();
-    };
-  }, [hatURL, status]);
-
-  // Create an image with the user's profile picture
-  const addAvatar = useCallback(() => {
-    const image = new Image();
-    image.src = `${avatarURL}?size=512`;
-    image.crossOrigin = 'anonymous';
-    image.onload = () => {
-      const avatar = new fabric.Image(image);
-      avatar.set({
-        top: innerCanvasSize / 8,
-        left: innerCanvasSize / 8,
-        width: 512,
-        height: 512,
-        scaleX: 1,
-        scaleY: 1,
-        selectable: false,
-        hoverCursor: 'default',
-      });
-      avatar.sendToBack();
-      editor?.canvas.add(avatar);
-      updateAvatar();
-      addHat();
-      updateAvatar();
-      boundaryRect.bringToFront();
-      editor?.canvas.add(boundaryRect);
-      updateAvatar();
-    };
-  }, [avatarURL, status]);
-
-  const updateAvatar = useCallback(() => {
-    setAvatarImage(
-      editor?.canvas.toDataURL({
-        format: 'png',
-        height: innerCanvasSize,
-        width: innerCanvasSize,
-        left: (canvasSize - innerCanvasSize) / 2,
-        top: (canvasSize - innerCanvasSize) / 2,
-        quality: 1,
-      }) ?? '/default.png'
-    );
-  }, [avatarURL, status]);
+  const updateAvatar = useCallback((canvasSize: number, innerCanvasSize: number, canvas: Canvas) => {
+    if (canvas) {
+      setAvatarImage(
+        canvas.toDataURL({
+          format: 'png',
+          height: innerCanvasSize,
+          width: innerCanvasSize,
+          left: (canvasSize - innerCanvasSize) / 2,
+          top: (canvasSize - innerCanvasSize) / 2,
+          quality: 1,
+        }) ?? '/default.png'
+      );
+    }
+  }, []);
 
   useEffect(() => {
-    addAvatar();
-    editor?.canvas.on('object:modified', () => {
-      updateAvatar();
-    });
-  }, [avatarURL, status]);
-
-  const onReady = (canvas: fabric.Canvas) => {
-    canvas.selection = false;
-    canvas.setBackgroundColor('#23272a', canvas.renderAll.bind(canvas));
-    canvas.preserveObjectStacking = true;
-    init(canvas);
-  };
+    if (status !== 'loading') initCanvas(updateAvatar, avatarURL, hatURL);
+  }, [avatarURL, hatURL, updateAvatar, status]);
 
   const onClick = () => {
     plausible('download', { props: { avatarImage, sessionData } });
-    updateAvatar();
   };
 
   return (
     <>
       <h2 className="text-2xl">Customize Your Hat</h2>
-      <FabricJSCanvas className="w-[640px] h-[640px]" onReady={onReady} />
+      <canvas id="canvas" />
       <div className="text-center">
         <h3 className="text-2xl">Preview Your Hat</h3>
         <div className="flex space-x-2">
@@ -140,3 +59,83 @@ const DiscordProfile = ({ avatarURL, hatURL }: PropsType) => {
 };
 
 export default DiscordProfile;
+
+const initCanvas = (updateAvatar: (canvasSize: number, innerCanvasSize: number, canvas: Canvas) => void, avatarURL?: string, hatURL?: string) => {
+  const canvasSize = 640 as const;
+  const innerCanvasSize = 512 as const;
+
+  const canvas = new fabric.Canvas('canvas', {
+    height: canvasSize,
+    width: canvasSize,
+    backgroundColor: '#23272a',
+  });
+
+  const rect = new fabric.Rect({
+    height: innerCanvasSize + 4,
+    width: innerCanvasSize + 4,
+    left: (canvasSize - innerCanvasSize) / 2 - 4,
+    top: (canvasSize - innerCanvasSize) / 2 - 4,
+    selectable: false,
+    fill: 'transparent',
+    hoverCursor: 'default',
+    stroke: '#7289da',
+    strokeDashArray: [16, 16],
+    strokeWidth: 4,
+  });
+  canvas.add(rect);
+
+  if (avatarURL) {
+    const image = new Image();
+    image.src = `${avatarURL}?size=512`;
+    image.crossOrigin = 'anonymous';
+    image.onload = () => {
+      const avatar = new fabric.Image(image);
+      avatar.set({
+        top: innerCanvasSize / 8,
+        left: innerCanvasSize / 8,
+        width: 512,
+        height: 512,
+        scaleX: 1,
+        scaleY: 1,
+        selectable: false,
+        hoverCursor: 'default',
+      });
+      canvas.add(avatar);
+      avatar.sendBackwards();
+      updateAvatar(canvasSize, innerCanvasSize, canvas);
+      canvas.renderAll();
+    };
+  }
+
+  if (hatURL) {
+    const image = new Image();
+    image.src = hatURL;
+    image.crossOrigin = 'anonymous';
+    image.onload = () => {
+      const hat = new fabric.Image(image, {
+        top: -20,
+        scaleX: 1.2,
+        scaleY: 1.2,
+        left: (canvasSize - innerCanvasSize) / 0.95,
+        borderColor: '#00ee76',
+        borderOpacityWhenMoving: 1,
+        borderScaleFactor: 1.5,
+        cornerColor: '#00ee76',
+        cornerSize: 24,
+        transparentCorners: true,
+      });
+      canvas.add(hat);
+      hat.bringToFront();
+    };
+  }
+
+  canvas.on('object:added', () => {
+    updateAvatar(canvasSize, innerCanvasSize, canvas);
+  })
+
+  canvas.on('object:modified', () => {
+    updateAvatar(canvasSize, innerCanvasSize, canvas)
+  })
+
+  return canvas;
+};
