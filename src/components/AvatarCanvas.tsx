@@ -3,7 +3,7 @@ import { Canvas } from 'fabric/fabric-impl';
 
 import { useSession } from 'next-auth/react';
 import React, { useState, useCallback, useEffect } from 'react';
-import NextImage from 'next/future/image';
+import NextImage from 'next/image';
 import { usePlausible } from 'next-plausible';
 
 interface PropsType {

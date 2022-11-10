@@ -1,5 +1,5 @@
 import DiscordButton from './DiscordButton';
-import Image from 'next/future/image';
+import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 
 const DiscordCTA: React.FC = () => {

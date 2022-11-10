@@ -1,5 +1,4 @@
 // @ts-check
-import { env } from './src/env/server.mjs';
 import { withPlausibleProxy } from 'next-plausible';
 /**
  * Don't be scared of the generics here.
@@ -19,11 +18,6 @@ export default withPlausibleProxy({ customDomain: 'https://plausible.augie.gg' }
     swcMinify: true,
     images: {
       domains: ['cdn.discordapp.com'],
-    },
-    experimental: {
-      images: {
-        allowFutureImage: true,
-      },
-    },
+    }
   })
 );
