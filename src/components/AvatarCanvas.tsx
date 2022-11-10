@@ -1,10 +1,10 @@
 import { fabric } from 'fabric';
 import { Canvas } from 'fabric/fabric-impl';
-
 import { useSession } from 'next-auth/react';
-import React, { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import NextImage from 'next/image';
 import { usePlausible } from 'next-plausible';
+import useWindowSize from '../hooks/useWindowSize';
 
 interface PropsType {
   [key: string]: string;
@@ -12,27 +12,176 @@ interface PropsType {
 
 const DiscordProfile = ({ avatarURL, hatURL }: PropsType) => {
   const { data: sessionData, status } = useSession();
+  const canvasElem = useRef<HTMLCanvasElement>(null);
+  const [canvas, setCanvas] = useState<Canvas>();
   const [avatarImage, setAvatarImage] = useState('');
+  const [fabricHat, setFabricHat] = useState<fabric.Image>();
+  const [fabricAvatar, setFabricAvatar] = useState<fabric.Image>();
+  const [fabricRectangle, setFabricRectangle] = useState<fabric.Rect>();
+  const { width } = useWindowSize();
   const plausible = usePlausible();
 
   const updateAvatar = useCallback((canvasSize: number, innerCanvasSize: number, canvas: Canvas) => {
-    if (canvas) {
-      setAvatarImage(
-        canvas.toDataURL({
-          format: 'png',
-          height: innerCanvasSize,
-          width: innerCanvasSize,
-          left: (canvasSize - innerCanvasSize) / 2,
-          top: (canvasSize - innerCanvasSize) / 2,
-          quality: 1,
-        }) ?? '/default.png'
-      );
-    }
+    setAvatarImage(
+      canvas.toDataURL({
+        format: 'png',
+        height: innerCanvasSize,
+        width: innerCanvasSize,
+        left: (canvasSize - innerCanvasSize) / 2,
+        top: (canvasSize - innerCanvasSize) / 2,
+        quality: 1,
+      })
+    );
   }, []);
 
+
   useEffect(() => {
-    if (status !== 'loading') initCanvas(updateAvatar, avatarURL, hatURL);
-  }, [avatarURL, hatURL, updateAvatar, status]);
+    if (width && canvas && fabricHat && fabricAvatar && fabricRectangle) {
+      const canvasSize = Math.max(width * 0.33, 320);
+      const canvasMarginMultiplier = 0.75;
+      const innerCanvasSize = canvasSize * canvasMarginMultiplier
+
+      canvas.setHeight(canvasSize).setWidth(canvasSize);
+
+      if (fabricRectangle) {
+        fabricRectangle.scaleToWidth(innerCanvasSize + 4).set({
+          left: (canvasSize - innerCanvasSize) / 2 - 4,
+          top: (canvasSize - innerCanvasSize) / 2 - 4,
+        });
+      }
+
+      if (fabricAvatar) {
+        fabricAvatar.scaleToWidth(innerCanvasSize).set({
+          left: (canvasSize - innerCanvasSize) / 2,
+          top: (canvasSize - innerCanvasSize) / 2,
+        });
+      }
+
+      const adjustedSize = (innerCanvasSize * 3) / 3.33;
+      if (fabricHat) {
+        fabricHat.scaleToWidth((innerCanvasSize * 3) / 3.33).set({
+          left:
+            canvasSize -
+            (canvasSize - innerCanvasSize) / 2 -
+            adjustedSize +
+            innerCanvasSize / 15,
+          top: (canvasSize - innerCanvasSize) / 2 - innerCanvasSize / 8,
+        })
+      }
+      canvas.renderAll();
+      updateAvatar(canvasSize, innerCanvasSize, canvas);
+    }
+  }, [width, fabricHat, canvas, fabricAvatar, fabricRectangle, updateAvatar])
+
+  useEffect(() => {
+    if (status !== 'loading' && canvasElem.current && width) {
+      const canvasSize = Math.max(width * 0.33, 320);
+      const canvasMarginMultiplier = 0.75;
+      const innerCanvasSize = canvasSize * canvasMarginMultiplier
+
+      if (!canvas && !fabricHat && !fabricAvatar && !fabricRectangle) {
+        const _canvas = new fabric.Canvas(canvasElem.current, {
+          height: canvasSize,
+          width: canvasSize,
+          backgroundColor: '#23272a',
+        });
+
+        const rect = new fabric.Rect({
+          height: innerCanvasSize + 4,
+          width: innerCanvasSize + 4,
+          left: (canvasSize - innerCanvasSize) / 2 - 4,
+          top: (canvasSize - innerCanvasSize) / 2 - 4,
+          selectable: false,
+          fill: 'transparent',
+          hoverCursor: 'default',
+          stroke: '#7289da',
+          strokeDashArray: [16, 16],
+          strokeWidth: 4,
+        });
+        setFabricRectangle(rect);
+        _canvas.add(rect);
+
+        if (avatarURL) {
+          const image = new Image();
+          image.src = `${avatarURL}?size=512`;
+          image.crossOrigin = 'anonymous';
+          image.onload = () => {
+            const _avatar = new fabric.Image(image);
+            _avatar.set({
+              left: (canvasSize - innerCanvasSize) / 2,
+              top: (canvasSize - innerCanvasSize) / 2,
+              scaleX: innerCanvasSize / image.width,
+              scaleY: innerCanvasSize / image.width,
+              selectable: false,
+              hoverCursor: 'default',
+            });
+            setFabricAvatar(_avatar);
+            _canvas.add(_avatar);
+            _avatar.sendBackwards();
+
+          };
+        }
+
+        const adjustedSize = (innerCanvasSize * 3) / 3.33;
+        if (hatURL) {
+          const image = new Image();
+          image.src = hatURL;
+          image.crossOrigin = 'anonymous';
+          image.onload = () => {
+            const _hat = new fabric.Image(image, {
+              left:
+                canvasSize -
+                (canvasSize - innerCanvasSize) / 2 -
+                adjustedSize +
+                innerCanvasSize / 15,
+              top: (canvasSize - innerCanvasSize) / 2 - innerCanvasSize / 8,
+              borderColor: '#00ee76',
+              borderOpacityWhenMoving: 1,
+              borderScaleFactor: 1.5,
+              cornerColor: '#00ee76',
+              cornerSize: 24,
+              transparentCorners: true,
+            }).scaleToWidth(adjustedSize);
+            setFabricHat(_hat);
+            _canvas.add(_hat);
+            _hat.bringToFront();
+          };
+        }
+        setCanvas(_canvas);
+        _canvas.renderAll();
+        updateAvatar(canvasSize, innerCanvasSize, _canvas);
+      }
+    }
+  }, [avatarURL, canvas, fabricAvatar, fabricHat, fabricRectangle, hatURL, status, updateAvatar, width]);
+
+  useEffect(() => {
+    if (canvas && width) {
+      const canvasSize = Math.max(width * 0.33, 320);
+      const canvasMarginMultiplier = 0.75;
+      const innerCanvasSize = canvasSize * canvasMarginMultiplier
+
+      console.log({ canvasSize, innerCanvasSize, canvas })
+
+      canvas.on('object:added', () => {
+        updateAvatar(canvasSize, innerCanvasSize, canvas);
+        canvas.renderAll();
+      });
+
+      canvas.on('object:modified', () => {
+        canvas.renderAll();
+        console.log({ canvasSize, innerCanvasSize, canvas })
+        updateAvatar(canvasSize, innerCanvasSize, canvas);
+      });
+
+    }
+
+    return () => {
+      if (canvas) {
+        canvas.off('object:added');
+        canvas.off('object:modified');
+      }
+    };
+  }, [canvas, status, updateAvatar, width]);
 
   const onClick = () => {
     plausible('download', { props: { avatarImage, sessionData } });
@@ -41,7 +190,7 @@ const DiscordProfile = ({ avatarURL, hatURL }: PropsType) => {
   return (
     <>
       <h2 className="text-2xl">Customize Your Hat</h2>
-      <canvas id="canvas" />
+      <canvas ref={canvasElem} />
       <div className="text-center">
         <h3 className="text-2xl">Preview Your Hat</h3>
         <div className="flex space-x-2">
@@ -59,83 +208,3 @@ const DiscordProfile = ({ avatarURL, hatURL }: PropsType) => {
 };
 
 export default DiscordProfile;
-
-const initCanvas = (updateAvatar: (canvasSize: number, innerCanvasSize: number, canvas: Canvas) => void, avatarURL?: string, hatURL?: string) => {
-  const canvasSize = 640 as const;
-  const innerCanvasSize = 512 as const;
-
-  const canvas = new fabric.Canvas('canvas', {
-    height: canvasSize,
-    width: canvasSize,
-    backgroundColor: '#23272a',
-  });
-
-  const rect = new fabric.Rect({
-    height: innerCanvasSize + 4,
-    width: innerCanvasSize + 4,
-    left: (canvasSize - innerCanvasSize) / 2 - 4,
-    top: (canvasSize - innerCanvasSize) / 2 - 4,
-    selectable: false,
-    fill: 'transparent',
-    hoverCursor: 'default',
-    stroke: '#7289da',
-    strokeDashArray: [16, 16],
-    strokeWidth: 4,
-  });
-  canvas.add(rect);
-
-  if (avatarURL) {
-    const image = new Image();
-    image.src = `${avatarURL}?size=512`;
-    image.crossOrigin = 'anonymous';
-    image.onload = () => {
-      const avatar = new fabric.Image(image);
-      avatar.set({
-        top: innerCanvasSize / 8,
-        left: innerCanvasSize / 8,
-        width: 512,
-        height: 512,
-        scaleX: 1,
-        scaleY: 1,
-        selectable: false,
-        hoverCursor: 'default',
-      });
-      canvas.add(avatar);
-      avatar.sendBackwards();
-      updateAvatar(canvasSize, innerCanvasSize, canvas);
-      canvas.renderAll();
-    };
-  }
-
-  if (hatURL) {
-    const image = new Image();
-    image.src = hatURL;
-    image.crossOrigin = 'anonymous';
-    image.onload = () => {
-      const hat = new fabric.Image(image, {
-        top: -20,
-        scaleX: 1.2,
-        scaleY: 1.2,
-        left: (canvasSize - innerCanvasSize) / 0.95,
-        borderColor: '#00ee76',
-        borderOpacityWhenMoving: 1,
-        borderScaleFactor: 1.5,
-        cornerColor: '#00ee76',
-        cornerSize: 24,
-        transparentCorners: true,
-      });
-      canvas.add(hat);
-      hat.bringToFront();
-    };
-  }
-
-  canvas.on('object:added', () => {
-    updateAvatar(canvasSize, innerCanvasSize, canvas);
-  })
-
-  canvas.on('object:modified', () => {
-    updateAvatar(canvasSize, innerCanvasSize, canvas)
-  })
-
-  return canvas;
-};

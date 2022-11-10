@@ -7,17 +7,17 @@ const DiscordButton: React.FC = () => {
 
   return (
     <button
-      className="max-h-[40px] text-base flex items-center px-2 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-200 transform rounded-md bg-[#5865f2] hover:bg-[#4752c4] focus:bg-[#3c45a5]"
+      className="max-h-[40px] w-fit text-base flex flex-row items-center px-2 py-2 font-small md:font-medium tracking-wide text-white capitalize transition-colors duration-200 transform rounded-md bg-[#5865f2] hover:bg-[#4752c4] focus:bg-[#3c45a5]"
       onClick={
         sessionData
           ? () => {
-              signOut();
-              plausible('signOut');
-            }
+            signOut();
+            plausible('signOut');
+          }
           : () => {
-              signIn('discord');
-              plausible('signIn');
-            }
+            signIn('discord');
+            plausible('signIn');
+          }
       }
     >
       <svg className="w-5 h-5 mx-1" xmlns="http://www.w3.org/2000/svg" width="71" height="55" viewBox="0 0 71 55" fill="none">
@@ -33,7 +33,7 @@ const DiscordButton: React.FC = () => {
           </clipPath>
         </defs>
       </svg>
-      <span className="mx-1">{sessionData ? 'Log Out' : 'Log In'}</span>
+      <span className="mx-1 whitespace-nowrap	">{sessionData ? 'Log Out' : 'Log In'}</span>
     </button>
   );
 };
