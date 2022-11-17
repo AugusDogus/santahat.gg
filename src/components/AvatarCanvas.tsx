@@ -10,7 +10,7 @@ interface PropsType {
   [key: string]: string;
 }
 
-const DiscordProfile = ({ avatarURL, hatURL }: PropsType) => {
+const AvatarCanvas = ({ avatarURL, hatURL }: PropsType) => {
   const { data: sessionData, status } = useSession();
   const canvasElem = useRef<HTMLCanvasElement>(null);
   const [canvas, setCanvas] = useState<Canvas>();
@@ -34,10 +34,11 @@ const DiscordProfile = ({ avatarURL, hatURL }: PropsType) => {
     );
   }, []);
 
+  const scaleFactor = 0.25;
 
   useEffect(() => {
     if (width && canvas && fabricHat && fabricAvatar && fabricRectangle) {
-      const canvasSize = Math.max(width * 0.33, 320);
+      const canvasSize = Math.max(width * scaleFactor, 320);
       const canvasMarginMultiplier = 0.75;
       const innerCanvasSize = canvasSize * canvasMarginMultiplier
 
@@ -75,7 +76,7 @@ const DiscordProfile = ({ avatarURL, hatURL }: PropsType) => {
 
   useEffect(() => {
     if (status !== 'loading' && canvasElem.current && width) {
-      const canvasSize = Math.max(width * 0.33, 320);
+      const canvasSize = Math.max(width * scaleFactor, 320);
       const canvasMarginMultiplier = 0.75;
       const innerCanvasSize = canvasSize * canvasMarginMultiplier
 
@@ -156,7 +157,7 @@ const DiscordProfile = ({ avatarURL, hatURL }: PropsType) => {
 
   useEffect(() => {
     if (canvas && width) {
-      const canvasSize = Math.max(width * 0.33, 320);
+      const canvasSize = Math.max(width * scaleFactor, 320);
       const canvasMarginMultiplier = 0.75;
       const innerCanvasSize = canvasSize * canvasMarginMultiplier
 
@@ -186,7 +187,6 @@ const DiscordProfile = ({ avatarURL, hatURL }: PropsType) => {
 
   return (
     <>
-      <h2 className="text-2xl">Customize Your Hat</h2>
       <canvas ref={canvasElem} />
       <div className="text-center">
         <h3 className="text-2xl">Preview Your Hat</h3>
@@ -204,4 +204,4 @@ const DiscordProfile = ({ avatarURL, hatURL }: PropsType) => {
   );
 };
 
-export default DiscordProfile;
+export default AvatarCanvas;
