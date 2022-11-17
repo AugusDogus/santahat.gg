@@ -15,6 +15,7 @@ const Home: NextPage = () => {
       <Head>
         <title>Santa Hat Bot</title>
         <meta name="description" content="Slap a Santa hat on your Discord avatar today!" />
+        <meta property="og:image" content="/logo.png" />
         <link rel="icon" href="/logo.png" />
       </Head>
       <main className="container flex flex-col items-center justify-center min-h-screen p-4 mx-auto text-slate-200 space-y-4">
