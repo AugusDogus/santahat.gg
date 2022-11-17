@@ -15,8 +15,8 @@ This application requires Node.js to run.
 ```bash
 git clone https://github.com/augusdogus/santahat.gg.git
 cd santahat.gg
-yarn i
-yarn dev
+pnpm i
+pnpm dev
 ```
 
 Create a `.env` file similar to [`.env.example`](https://github.com/AugusDogus/santahat.gg/blob/main/.env.example).
