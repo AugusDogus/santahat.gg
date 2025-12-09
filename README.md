@@ -1,30 +1,44 @@
+<p align="center">
+  <img src="public/logo.png" alt="Santa Hat Bot Logo" width="128" height="128">
+</p>
+
 <h1 align="center"><a href="https://santahat.gg/" target="_blank">santahat.gg</a></h1>
 
-## Stack
+<p align="center">Slap a Santa hat on your Discord avatar.</p>
 
-- **Bootstrapping**: [create-t3-app](https://create.t3.gg/)
-- **Framework**: [Next.js](https://nextjs.org/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **Authentication**: [NextAuth.js](https://next-auth.js.org/)
-- **Deployment**: [Vercel](https://vercel.com/)
+## Tech Stack
 
-## Running Locally
+- [Next.js](https://nextjs.org/) - React framework
+- [Tailwind CSS](https://tailwindcss.com/) - Styling
+- [shadcn/ui](https://ui.shadcn.com/) - UI components
+- [Better Auth](https://better-auth.com/) - Authentication
+- [Fabric.js](http://fabricjs.com/) - Canvas manipulation
+- [Vercel](https://vercel.com/) - Deployment
 
-This application requires Node.js to run.
+## Getting Started
 
 ```bash
 git clone https://github.com/augusdogus/santahat.gg.git
 cd santahat.gg
-pnpm i
-pnpm dev
+bun install
 ```
 
-Create a `.env` file similar to [`.env.example`](https://github.com/AugusDogus/santahat.gg/blob/main/.env.example).
+Copy `.env.example` to `.env` and fill in your Discord OAuth credentials:
+
+```bash
+cp .env.example .env
+```
+
+Start the development server:
+
+```bash
+bun dev
+```
 
 ## License
 
-A license is currently not being offered for this software.
+[MIT](LICENSE)
 
-## Thanks to
+---
 
-- [Nexxel](https://github.com/nexxeln/) for designing a readme for which this readme used as a base.
+<sub>Scaffolded with [create-t3-app](https://create.t3.gg/)</sub>

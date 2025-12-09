@@ -1,9 +1,131 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+/* Discord Brand Colors */
+/* Blurple: #5865F2, Green: #57F287, Yellow: #FEE75C */
+/* Fuchsia: #EB459E, Red: #ED4245, Black: #23272A */
+
+:root {
+  --radius: 0.625rem;
+  /* Light theme - clean whites with Discord Blurple accents */
+  --background: #ffffff;
+  --foreground: #23272a;
+  --card: #f6f6f7;
+  --card-foreground: #23272a;
+  --popover: #ffffff;
+  --popover-foreground: #23272a;
+  --primary: #5865f2; /* Discord Blurple */
+  --primary-foreground: #ffffff;
+  --secondary: #e3e5e8;
+  --secondary-foreground: #23272a;
+  --muted: #e3e5e8;
+  --muted-foreground: #6d6f78;
+  --accent: #5865f2;
+  --accent-foreground: #ffffff;
+  --destructive: #ed4245; /* Discord Red */
+  --border: #e3e5e8;
+  --input: #e3e5e8;
+  --ring: #5865f2;
+  --chart-1: #5865f2;
+  --chart-2: #57f287;
+  --chart-3: #fee75c;
+  --chart-4: #eb459e;
+  --chart-5: #ed4245;
+  --sidebar: #f2f3f5;
+  --sidebar-foreground: #23272a;
+  --sidebar-primary: #5865f2;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e3e5e8;
+  --sidebar-accent-foreground: #23272a;
+  --sidebar-border: #e3e5e8;
+  --sidebar-ring: #5865f2;
+}
+
+.dark {
+  /* Dark theme - Discord-inspired colors */
+  --background: #36393f; /* Discord dark background */
+  --foreground: #dcddde;
+  --card: #2f3136; /* Discord card background */
+  --card-foreground: #dcddde;
+  --popover: #2f3136;
+  --popover-foreground: #dcddde;
+  --primary: #5865f2; /* Discord Blurple */
+  --primary-foreground: #ffffff;
+  --secondary: #40444b;
+  --secondary-foreground: #dcddde;
+  --muted: #40444b;
+  --muted-foreground: #96989d;
+  --accent: #5865f2;
+  --accent-foreground: #ffffff;
+  --destructive: #ed4245;
+  --border: #40444b;
+  --input: #40444b;
+  --ring: #5865f2;
+  --chart-1: #5865f2;
+  --chart-2: #57f287;
+  --chart-3: #fee75c;
+  --chart-4: #eb459e;
+  --chart-5: #ed4245;
+  --sidebar: #2f3136;
+  --sidebar-foreground: #dcddde;
+  --sidebar-primary: #5865f2;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #40444b;
+  --sidebar-accent-foreground: #dcddde;
+  --sidebar-border: #40444b;
+  --sidebar-ring: #5865f2;
+}
 
 @layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
   body {
-    @apply bg-[#36393f];
+    @apply bg-background text-foreground;
   }
 }
