@@ -8,6 +8,8 @@ import { cn } from "~/lib/utils";
 const PRESET_HATS = [
   { id: "christmas", name: "Santa Hat", src: "/hats/christmas.png" },
   { id: "osrs", name: "OSRS Hat", src: "/hats/osrs.png" },
+  { id: "nook", name: "Animal Crossing", src: "/hats/nook.png" },
+  { id: "roblox", name: "Roblox Hat", src: "/hats/roblox.png" },
 ] as const;
 
 interface HatSelectorProps {
